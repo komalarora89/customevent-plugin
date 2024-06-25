@@ -21,3 +21,10 @@ PLugin Name: Custom Event Plugin
   <li>Html and Css</li>
 </ul>
 
+<strong>The below image shows the Grid view of the plugin</strong>
+<img src="https://github.com/komalarora89/customevent-plugin/blob/main/Grid_View.jpg">
+
+<strong>The below image shows the Calender view of the plugin</strong>
+<img src="https://github.com/komalarora89/customevent-plugin/blob/main/Calender_View.jpg">
+
+
