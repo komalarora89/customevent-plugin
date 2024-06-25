@@ -1,8 +1,8 @@
-PLugin Name: Custom Event Plugin
-<strong>Purpose of this Plugin </strong>
+<h1>Plugin Name: Custom Event Plugin</h1>
+<h2>Purpose of this Plugin </h2>
 <p>This is the project for creating custom events module for Programs and Event page.</p>
 
-<strong>Key Highlists of this project are:</strong>
+<h2>Key Highlights of this plugin are:</h2>
 <ul>
 <li>Created Custom Post type</li>
 <li>Created Custom taxonomies based on specific topic(Events, SFQs, Learning)</li>
@@ -11,7 +11,7 @@ PLugin Name: Custom Event Plugin
 <li>Posts data can be sort based on the category type</li>
 </ul>
 
-<strong>Technology Usage</strong>
+<h2>Technology Usage</h2>
 <ul>
   <li>Wordpress Code</li>
   <li>Wordpress Hooks</li>
