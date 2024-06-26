@@ -3,7 +3,7 @@
  * Plugin Name: Custom Events
  * Description: Allows users to add custom events using a shortcode.
  * Version: 1.0
- * Author: Komal Arora
+ * Author: your Name
  */
 
 // Exit if accessed directly.
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin code goes here.
-// ####################### Custom post for Events  ##########################
+// ####################### Custom post for Projects ##########################
 
 
 add_action( 'init', 'register_events_posttype' );
@@ -88,6 +88,85 @@ function register_events_posttype() {
 	register_taxonomy( 'event-category', 'events', $args );
 }
 
+// -- Showing Events in calendar---
+function get_all_events_calendar_function() {
+    $current_date = date('Y-m-d');
+    $events = array(
+        'post_type'      => 'events',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1, 
+		'meta_key'       => 'start_date',
+		'orderby'        => 'meta_value',
+		'order'          => 'ASC',
+		//'orderby'        => 'post_date',
+		'meta_query'     => array(
+			 'relation' => 'AND',
+				array(
+					'key'     => 'end_date',
+					'value'   => $current_date,
+					'compare' => '>=',
+					'type'    => 'DATE',
+				),
+				array(
+					'relation' => 'OR',
+					array(
+						'key'     => 'start_date',
+						'value'   => $current_date,
+						'compare' => '<=',
+						'type'    => 'DATE',
+					),
+					array(
+						'key'     => 'end_date',
+						'value'   => $current_date,
+						'compare' => '>=',
+						'type'    => 'DATE',
+					),
+				),
+			),
+	);
+    $events_query = new WP_Query($events);
+    $events_data = array();
+
+    if ($events_query->have_posts()) {
+        while ($events_query->have_posts()) {
+            $events_query->the_post();
+            $start_date = get_post_meta(get_the_ID(), 'start_date', true); 
+            $end_date = get_post_meta(get_the_ID(), 'end_date', true);
+			$display_end_date  = date('Ymd', strtotime($end_date.'+1 day'));
+			$location_event = get_post_meta(get_the_ID(), 'location_event', true);
+        	$time_event = get_post_meta(get_the_ID(), 'time_event', true);
+			$Event_link_Meta = (get_post_meta($post_id, 'email', true) !== '') ? get_post_meta($post_id, 'email', true) : '';
+			//echo $start_date .'-'.$end_date;
+            $event_data = array(
+                'title' => get_the_title(),
+                'start' => $start_date,
+                'end' => $display_end_date,
+                'description' => get_the_content(),
+				'original_end' => $end_date,
+				'event_link_meta' =>$Event_link_Meta,
+				'location_event' => $location_event,
+            	'time_event' => $time_event
+            );
+
+            $events_data[] = $event_data;
+			//echo '<pre>'; print_r($events_data); echo '</pre>';
+        }
+        wp_reset_postdata(); 
+    }
+
+    wp_send_json_success($events_data);
+    die();
+}
+
+add_action('wp_ajax_get_all_events_calendar_function', 'get_all_events_calendar_function');
+add_action('wp_ajax_nopriv_get_all_events_calendar_function', 'get_all_events_calendar_function');
+
+
+
+
+
+//calendar event ends here//
+
 add_shortcode('events', 'wp_events_function');
 function wp_events_function(){
 	$taxonomy = 'event-category'; 
@@ -143,7 +222,7 @@ function wp_events_function(){
 	
 	$query = new WP_Query( $args );
 	//echo '<pre>'; print_r($query); echo'</pre>';
-	$finalhtml .= '<div class="academic-calendar-card-items-body">';
+	$finalhtml .= '<div class="academic-calendar-card-items-body komal">';
 	if($query->have_posts()){
 	while($query->have_posts()){
 		$query->the_post();
@@ -330,7 +409,7 @@ function wp_events_function(){
               </li>';
 		}
 		
-		$finalhtml .='<div class="academic-calendar-card-items-body-item '.$post_id.'" data-start="'.$Start_date.'" data-end="'.$End_date.'">
+		$finalhtml .='<div class="academic-calendar-card-items-body-item" data-start="'.$Start_date.'" data-end="'.$End_date.'">
 				<div class="event-info">
 					<a class ="head_title '.$addnewclass.'" href="'.$url_post.'" data-id='.$post_id.'><h3>'.$post_title.'</h3></a>
           <p class="event-desc">'.$post_content.'</p>
@@ -372,13 +451,16 @@ function wp_events_function(){
     <div class="filter-group-items toggle-btns events_btn">
         <button type="button" class="current_events active" data-title="current" data-current="current">Events</button>
         <button type="button" class="old_events" data-title="old" data-old="old">PAST EVENTS</button>
+		<button type="button" class="calender-button_new view">Calendar View</button>
     </div> 
+	
 	<div>
 		<form  method="get" id="searchform">
-			<input type="text" value="" name="s" id="s" placeholder="Search for the Events" />
+			<input type="text" value="" name="s" id="s" placeholder="Search Custom Post Type" />
 			<input type="button" id="searchsubmit" value="Search" />
     	</form>
 	</div>
+	<div id="calendar_new" style="display:none"></div>
     <div id="event-container">' . $finalhtml . '</div>';
 
     // Custom search form
@@ -487,7 +569,7 @@ function get_upcomin_events_post(){
 	}
 
 	$query = new WP_Query( $args );
-	$finalhtml .= '<div class="academic-calendar-card-items-body  '.$post_id.'" >';
+	$finalhtml .= '<div class="academic-calendar-card-items-body">';
 	if($query->have_posts()){
 		while($query->have_posts()){
 			$query->the_post();
@@ -577,7 +659,7 @@ function get_upcomin_events_post(){
  				$add_reg = 'reg_reminder_li';
 			}
 			else{
-				if (($End_date < $cur_date || $Start_date < $cur_date && $End_date > $cur_date) && $post_id !== 41508)  {
+				if (($End_date < $cur_date || $Start_date < $cur_date && $End_date > $cur_date) && $post_id !== 41508) {
 					$newregisterlinkpopup = '<a class="no_popupthis reg_closed" data-id='.$post_id.' href="#">Registration Closed</a>';
 					$url_post = '';
  					$add_reg = 'reg_closed_li';	
@@ -660,7 +742,7 @@ function get_upcomin_events_post(){
 										<span>'.$category.'</span>
 					  </li>';
 			}
-			$finalhtml .='<div class="academic-calendar-card-items-body-item  '.$post_id.'" data-id='.$post_id.' data-start="'.$Start_date.'" data-end="'.$End_date.'">
+			$finalhtml .='<div class="academic-calendar-card-items-body-item" data-id='.$post_id.' data-start="'.$Start_date.'" data-end="'.$End_date.'">
 							<div class="event-info">
 							<a class="head_title '.$addnewclass.'" href="'.$url_post.'"><h3>'.$post_title.'</h3></a>
 							<p class="event-desc">'.$post_content.'</p>
@@ -749,7 +831,7 @@ function fillters_events_function(){
 	}
     $query = new WP_Query($args);
 
-    $finalhtml .= '<div class="academic-calendar-card-items-body  '.$post_id.'">';
+    $finalhtml .= '<div class="academic-calendar-card-items-body">';
 	if($query->have_posts()){
 		while($query->have_posts()){
 			$query->the_post();
@@ -815,7 +897,7 @@ function fillters_events_function(){
  				$add_reg = 'reg_reminder_li';
 			}
 			else{
-				if( ($End_date < $cur_date || $Start_date < $cur_date && $End_date > $cur_date) && $post_id !== 41508) {
+				if (($End_date < $cur_date || $Start_date < $cur_date && $End_date > $cur_date) && $post_id !== 41508) {
 					$newregisterlinkpopup = '<a class="no_popupthis reg_closed" data-id='.$post_id.' href="#">Registration Closed</a>';
 					$url_post = '';
  					$add_reg = 'reg_closed_li';	
@@ -922,7 +1004,7 @@ function fillters_events_function(){
 										<span>'.$category.'</span>
 					  </li>';
 				}
-			$finalhtml .='<div class="academic-calendar-card-items-body-item  '.$post_id.'" data-start="'.$Start_date.'" data-end="'.$End_date.'">
+			$finalhtml .='<div class="academic-calendar-card-items-body-item" data-start="'.$Start_date.'" data-end="'.$End_date.'">
 					<div class="event-info">
 						<a class="head_title '.$addnewclass.'" href="'.$url_post.'"><h3>'.$post_title.'</h3></a>
 						<p class="event-desc">'.$post_content.'</p>
@@ -967,7 +1049,7 @@ function search_events_function(){
     );
 
     $search_query = new WP_Query($search_args);
-	$finalhtml .= '<div class="academic-calendar-card-items-body  '.$post_id.'">';
+	$finalhtml .= '<div class="academic-calendar-card-items-body">';
 	if($search_query->have_posts()){
 		while($search_query->have_posts()){
 			$search_query->the_post();
@@ -1140,7 +1222,7 @@ function search_events_function(){
 										<span>'.$category.'</span>
 					  </li>';
 				}
-			$finalhtml .='<div class="academic-calendar-card-items-body-item  '.$post_id.'" data-start="'.$Start_date.'" data-end="'.$End_date.'">
+			$finalhtml .='<div class="academic-calendar-card-items-body-item" data-start="'.$Start_date.'" data-end="'.$End_date.'">
 					<div class="event-info">
 						<a class="head_title '.$addnewclass.'" href="'.$url_post.'"><h3>'.$post_title.'</h3></a>
 						<p class="event-desc">'.$post_content.'</p>
@@ -1194,10 +1276,14 @@ add_action( 'wp_head', function () { ?>
 		 	mythis.addClass('active');
 			//jQuery('.upcoming_events').removeClass('active');
 			jQuery('.old_events').removeClass('active');
+			jQuery('.calender-button_new').removeClass('active');
+			jQuery('#calendar_new').css('display', 'none');
+            jQuery('#calendar_new').removeClass('active-now');
+			 jQuery('#event-container').css('display', 'block');
 		
 		jQuery.ajax({
 			type : "POST",
-			url :  "https://humber.ca/innovativelearning/wp-admin/admin-ajax.php",
+			url :  "/wp-admin/admin-ajax.php",
 			data : {action:"get_upcomin_events_post" ,dataattr:dataattr },
 			success : function(response) { 
 				
@@ -1222,9 +1308,13 @@ add_action( 'wp_head', function () { ?>
 		 	mythis.addClass('active');
 			//jQuery('.upcoming_events').removeClass('active');
 			jQuery('.current_events').removeClass('active');
+		 	jQuery('.calender-button_new').removeClass('active');
+		 	jQuery('#calendar_new').css('display', 'none');
+            jQuery('#calendar_new').removeClass('active-now');
+		  	jQuery('#event-container').css('display', 'block');
 		jQuery.ajax({
 			type : "POST",
-			url :  "https://humber.ca/innovativelearning/wp-admin/admin-ajax.php",
+			url :  "/wp-admin/admin-ajax.php",
 			data : {action:"get_upcomin_events_post" ,dataattr:dataattr },
 			success : function(response) { 
 				
@@ -1249,7 +1339,7 @@ add_action( 'wp_head', function () { ?>
 				let eventsTitle = jQuery(this).attr('data-title');
 				jQuery.ajax({
 					type : "POST",
-					url :  "https://humber.ca/innovativelearning/wp-admin/admin-ajax.php",
+					url :  "/wp-admin/admin-ajax.php",
 					data : {action:"fillters_events_function" ,eventsTitle:eventsTitle,  CatID:CatID},
 					success : function(response) { 
 						jQuery('#event-container').html(response);
@@ -1267,11 +1357,15 @@ add_action( 'wp_head', function () { ?>
 			jQuery('.current_events').addClass('active');
 			//jQuery('.upcoming_events').removeClass('active');
 			jQuery('.old_events').removeClass('active');
+			jQuery('.calender-button_new').removeClass('active');
+		 	jQuery('#calendar_new').css('display', 'none');
+            jQuery('#calendar_new').removeClass('active-now');
+		  	jQuery('#event-container').css('display', 'block');
 		}
 		
 		jQuery.ajax({
 			type : "POST",
-			url :  "https://humber.ca/innovativelearning/wp-admin/admin-ajax.php",
+			url :  "/wp-admin/admin-ajax.php",
 			data : {action:"get_upcomin_events_post", dataattr:'current'
 				   },
 			success : function(response) { 
@@ -1282,64 +1376,242 @@ add_action( 'wp_head', function () { ?>
 		});
 		
 	});
+// 	jQuery('.calender-button_new').click(function(){
+// 		if(jQuery('#calendar_new').hasClass('active-now')){
+// 			jQuery(this).addClass('active');
+// 			jQuery('.old_events').removeClass('active');
+// 			jQuery('.current_events').removeClass('active');
+// 		}
+// 		else{
+// // 			jQuery(this).removeClass('active');
+// // 			jQuery('.old_events').removeClass('active');
+// // 			jQuery('.current_events').addClass('active');
+// 		}
+// 	});
 	
 	jQuery(document).on('click', '.no_popupthis', function(e){
 		//console.log('clicked');
 		e.preventDefault();
 		
 	});
-
-	// Jquery for search funactionality
-
-	$('#searchsubmit').on('click', function(e) {
-		// let mythis = jQuery(this);
-		 let checkClass = jQuery('.acadmic-cat .type-1');
-		   checkClass.each(function(){
-			   if(jQuery(this).hasClass('active')){
-				    jQuery(".clear-filter-btn").trigger("click");
-			   }
-		  });
 		
-			jQuery('.old_events').removeClass('active');
-			jQuery('.current_events').removeClass('active');
-		
-        var searchQuery = $('#s').val().trim(); 
-		console.log(searchQuery);
-        if (searchQuery !== '') {
-            $.ajax({
-                url: 'https://humber.ca/innovativelearning/wp-admin/admin-ajax.php', 
-                type: 'POST',
-                data: {
-                    action: 'search_events_function', 
-                    searchQuery: searchQuery, 
-                },
-                success: function(response) {
-					jQuery('#event-container').html(response);
-					jQuery('#s').val('')
-                    //console.log(response); 
-                   
-                },
-                error: function(xhr, status, error) {
-                   // console.error(xhr.responseText); 
+});
+
+</script>
+<script>
+	jQuery(document).ready(function($) {
+  
+    function fetchAllEventsCalendar() {
+        $.ajax({
+            url: ajax_params.ajax_url,
+            type: 'GET',
+            data: {
+                action: 'get_all_events_calendar_function',
+            },
+            success: function(response) {
+                console.log('All events:', response);
+                if (response.success) {
+                    var events = response.data;
+                    $('#calendar_new').fullCalendar('removeEvents');
+                    $('#calendar_new').fullCalendar('renderEvents', events, true);
+                } else {
+                    console.log('Error fetching events:', response.data);
                 }
-            });
+            },
+            error: function(error) {
+                console.log('AJAX error:', error);
+            }
+        });
+    }
+
+    $('#calendar_new').fullCalendar({
+		minTime: '00:00',
+   		maxTime: '24:00',
+//        eventRender: function(event, element) {
+// 		   //console.log(element);
+//             element.qtip({
+//                 content: event.description
+//             });
+//         },
+        eventClick: function(event) {
+			//console.log('hello');
+			 //console.log(event);
+            openPopup(event); 
         }
     });
-    jQuery('#s').keypress(function(e){
-		if(e.keyCode === 13){
-			e.preventDefault();
-			jQuery('#searchsubmit').click();
-		}
-	});
-		
+
+    jQuery(document).on('click', '.calender-button_new', function(){
+        if (jQuery('#calendar_new').hasClass('active-now')) {
+			jQuery(this).removeClass('active');
+			jQuery('.current_events').addClass('active');
+            jQuery('#event-container').css('display', 'block');
+            jQuery('#calendar_new').css('display', 'none');
+            jQuery('#calendar_new').removeClass('active-now');
+        } else {
+            fetchAllEventsCalendar();
+			jQuery(this).addClass('active');
+ 			jQuery('.old_events').removeClass('active');
+ 			jQuery('.current_events').removeClass('active');
+            jQuery('#event-container').css('display', 'none');
+            jQuery('#calendar_new').css('display', 'block');
+            jQuery('#calendar_new').addClass('active-now');
+        }
+    });
+	
+
+
+var popup = document.getElementById('eventPopup');
+
+var closePopup = document.getElementById('closePopup');
+
+closePopup.addEventListener('click', function() {
+	popup.style.display = 'none';
+	document.body.classList.remove('popup-open');
 });
 
 
 
+// Function to format date to DD/MM/YY
+function formatDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1; 
+    var year = date.getFullYear().toString().slice(-2); 
 
+    day = day < 10 ? '0' + day : day;
+    month = month < 10 ? '0' + month : month;
 
+    return day + '/' + month + '/' + year;
+}
+function parseDate(dateStr) {
+    var year = dateStr.slice(0, 4);
+    var month = dateStr.slice(4, 6) - 1; 
+    var day = dateStr.slice(6, 8);
+    return new Date(year, month, day);
+}
+function parseEndDate(dateStr) {
+    var year = dateStr.slice(0, 4);
+    var month = dateStr.slice(4, 6);
+    var day = dateStr.slice(6, 8);
+    var isoDateStr = year + '-' + month + '-' + day;
+    return new Date(isoDateStr);
+}
+function formatFullDate(date) {
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+function formatShortMonthDay(date) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+}
+function formatShortMonthDayWithDay(date) {
+    var options = { weekday: 'short', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
 
-	</script>
+		
+// Function to set popup links
+function setPopupLinks(startDate, endDate, calendarTitle, calendarBody, eventLinkMeta, finalSubject, emailBodyEncoded) {
+    var calendarLink = document.getElementById('calendarLink');
+    var emailLink = document.getElementById('emailLink');
+
+    calendarLink.href ='https://outlook.live.com/calendar/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=' + startDate + '&enddt=' + endDate + '&subject=' + calendarTitle + '&body=' + calendarBody + ' ' + calendarTitle;
+    emailLink.href = 'mailto:' + eventLinkMeta + '?subject=' + finalSubject + '&body=' + emailBodyEncoded;
+}	
+		
+function openPopup(event) {
+    var title = event.title;
+    var start = event.start ? formatDate(event.start.toDate()) : '';
+    var end = event.end ? formatDate(event.end.toDate()) : '';
+	var originalEnd = event.original_end ? formatDate(parseDate(event.original_end)) : '';
+    //var description = event.description;
+	var fullDate = event.start ? formatFullDate(event.start.toDate()) : '';
+	
+	//new date format for dates
+	var shortStart = event.start ? formatShortMonthDay(event.start.toDate()) : '';
+    var shortEnd = event.original_end ? formatShortMonthDay(parseDate(event.original_end)) : '';
+    var shortDateRange = shortStart && shortEnd ? `${shortStart} to ${shortEnd}` : '';
+	
+	//Get days name from start and end date
+	var shortStartWithDay = event.start ? formatShortMonthDayWithDay(event.start.toDate()) : '';
+	var shortEndWithDay = event.original_end ? formatShortMonthDayWithDay(parseDate(event.original_end)) : '';
+	var shortDayRange = shortStartWithDay && shortEndWithDay ? `${shortStartWithDay} to ${shortEndWithDay}` : '';
+	//for the calendar links
+	var startDate = event.start ? event.start.toDate().toISOString() : '';
+   	var endDate = event.original_end ? parseEndDate(event.original_end).toISOString() : '';
+    var calendarTitle = encodeURIComponent(title);
+    var calendarBody = encodeURIComponent('Save The Date For ' + title);
+	var eventLinkMeta = event.event_link_meta ? encodeURIComponent(event.event_link_meta) : '';
+    var finalSubject = encodeURIComponent('Reply to: ' + title);
+	var Back_to_events = 'https://humber.ca/innovativelearning/programs-and-events/';
+	
+	// Construct the email body
+    var emailBody = `Save The Date on ${shortStart}\n`;
+    if (title) {
+        emailBody += `${title}\n`;
+    }
+    if (eventLinkMeta) {
+        emailBody += `${eventLinkMeta}\n`;
+    }
+    if (description) {
+        emailBody += `${description}\n`;
+    }
+    //emailBody += `Back To Events : ${Back_to_events}\n`;
+    var emailBodyEncoded = encodeURIComponent(emailBody);
+
+    document.getElementById('popupTitle').innerText = title;
+    document.getElementById('popupStartEnd').innerText = shortDateRange;
+	document.getElementById('popupstartdate').innerText = fullDate;
+	document.getElementById('popupEventDay').innerText = shortDayRange;
+ 	var description = event.description;
+    if (description) {
+        document.getElementById('popupDescription').innerText = description;
+		//document.getElementById('popupDescription').style.display = 'block';
+    } else {
+        document.getElementById('popupDescription').style.display = 'none';
+    }
+	var locationEvent = event.location_event ? event.location_event : '';
+	if (locationEvent) {
+        document.getElementById('popupLocation').innerText = locationEvent;
+		//document.getElementById('popupLocation').style.display = 'block';
+    } else {
+        document.getElementById('popupLocation').style.display = 'none';
+    }
+    var timeEvent = event.time_event ? event.time_event : '';
+	if (timeEvent) {
+        document.getElementById('popupEventTime').innerText = timeEvent;
+        //document.getElementById('popupEventTime').style.display = 'block';
+    } else {
+        document.getElementById('popupEventTime').style.display = 'none';
+    }
+	setPopupLinks(startDate, endDate, calendarTitle, calendarBody, eventLinkMeta, finalSubject, emailBodyEncoded);
+	
+    // Show the popup
+    popup.style.display = 'block';
+	document.body.classList.add('popup-open');
+	$('#popupContainer').addClass('popup-active');
+}
+
+		
+// Function to handle clicks outside the popup
+$(document).on('click', function(event) {
+    if ($('body').hasClass('popup-open') && $('#popupContainer').hasClass('popup-active')) {
+      	//console.log('both');
+         if (!$(event.target).closest('#popupContainer').length && !$(event.target).closest('.fc-event').length) {
+           // console.log('contained');
+            $('#eventPopup').hide();
+            $('body').removeClass('popup-open');
+            $('#popupContainer').removeClass('popup-active');
+        }
+		
+    }
+});
+
+});
+
+</script>
 <style>
 
 .academic-calendar-card-items-body-item {
@@ -1395,6 +1667,78 @@ add_action( 'wp_head', function () { ?>
 }
 .selected-academic-calendar-date-types img {
     width: 20px !important;
+}
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
+    max-width: 80%;
+}
+#popupContainer {
+    position: relative;
+}
+.popup-content {
+    text-align: center;
+}
+
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+.close_calender {
+    position: absolute;
+    top: -18px;
+    right: -6px;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    color: gray;
+}
+
+body.popup-open {
+    overflow: hidden;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+hr.popup_hr {
+    margin-top: -10px;
+    border: 2px solid #0390f3;
+}
+
+div#popupTitle {
+    text-align: start;
+	margin-top: 24px;
+ 	font-weight: bold; 
+}
+
+p#popupStartEnd {
+    text-align: start;
+/*     margin-top: 10px; */
+}
+
+div#popup_links {
+    text-align: start;
+}
+h2#popupstartdate {
+    text-align: start;
+}
+p#popupDescription, p#popupLocation, p#popupEventTime, p#popupEventDay {
+    text-align: start;
+	line-height: 1;
+}
+.events_data {
+    margin-top: 4px;
 }
 </style>
 <?php } );
