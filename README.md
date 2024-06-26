@@ -1,4 +1,4 @@
-<h1>Plugin Name: Custom Event Plugin</h1>
+<h1>Plugin Name: Custom Event </h1>
 <h2>Purpose of this Plugin </h2>
 <p>This is the project for creating custom events module for Programs and Event page.</p>
 
