@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin code goes here.
-// ####################### Custom post for Projects ##########################
+// ####################### Custom post for Events  ##########################
 
 
 add_action( 'init', 'register_events_posttype' );
