@@ -1,0 +1,172 @@
+a{cursor:pointer;}
+.academic-calendar-card-items-body-item {display: flex; flex-flow: row wrap; justify-content: space-between; box-shadow: 5px 3px 13px 6px rgb(0 0 0 / 6%); border-radius: 10px;}
+  .academic-calendar-card-items-body-item .date-info {display: flex; flex-flow: column; justify-content: center; align-items: center;  gap: 5px; padding: 15px;flex: 0 1 230px;
+      text-align: center;
+  }
+  .academic-calendar-card-items-body-item .event-info {
+      padding: 15px;
+      flex: 2;
+      border-right: 1px solid #C4C4C4;
+      display: flex;
+      flex-flow: column;
+      gap: 8px;
+  }
+  li.click-here.reg_reminder_li {
+    display: none;
+}
+  .academic-calendar-card-items-body {
+      display: flex;
+      flex-flow: column;
+      gap: 20px;
+  }
+  .selected-academic-calendar-date-types li {
+      border-radius: 5px;
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      gap: 5px;
+      font-weight: bold;
+  }
+  .selected-academic-calendar-date-types {
+      display: flex;
+      flex-flow: row wrap;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      gap: 8px;
+  }
+  .selected-academic-calendar-date-types li.Tag{
+      background: #B4C800;
+      color: #000;
+  }
+  .selected-academic-calendar-date-types img {
+      width: 20px !important;
+  }
+
+
+/* Filter Area */
+button.clear-filter-btn {
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: bold;
+    color: #000033;
+}
+.academic-calendar-filters-wrp.second {
+    background: #fff;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    box-shadow: 5px 3px 13px 6px rgb(0 0 0 / 6%);
+    border-radius: 10px;
+    align-items: center;
+    padding: 26px;
+    margin-bottom:66px;
+}
+.event-desc p, .text-left {
+    display: block !important;
+    font-size: 15px;
+    line-height: normal;
+    color: #3A4856;
+    font-weight: normal;
+    padding-bottom: 1em;
+}
+
+.filter-group-items.filter-date-type-wrp {  display: inline-flex;   gap: 10px;   justify-content: flex-end;    align-items: center;    font-size: 15px;    line-height: normal;}
+ul.academic-date-types-list{ display: flex;  margin: 0px;  list-style: none;   align-items: center;    gap: 15px;}
+ul.academic-date-types-list li a {text-decoration: unset !important;  color:#000 !important;}
+ul.academic-date-types-list li {text-align:center;list-style: none; cursor: pointer; font-size: 14px;line-height: 14px;color: #000;text-transform: capitalize;font-weight: bold;background: #fff;
+    border-radius: 5px;   padding: 10px 38px; }
+li.type-1.Events{border: 2px solid #A6DCF4;}
+li.type-1.Certificates {border: 2px solid #F2B5C0;}
+li.type-1.HLOs {border: 2px solid #F9DAA9;}
+li.type-1.LMS.\&.EdTech.active {background: #BFDAD6; border: 2px solid #BFDAD6;}
+li.type-1.Certificates.active {background:#F2B5C0;border: 2px solid #F2B5C0;}
+li.type-1.HLOs.active {background:#F9DAA9;border: 2px solid #F9DAA9;}
+li.type-1.Events.active {background: #A6DCF4;  border: 2px solid #A6DCF4;}
+li.type-1.Learning{border: 2px solid #D1DD61;}
+li.type-1.Learning.active {background: #D1DD61; border:2px solid #D1DD61;}
+li.type-1.LMS.\&.EdTech{border: 2px solid #BFDAD6;}
+li.type-1.LMS.\&.EdTech.active {background: #BFDAD6; border: 2px solid #BFDAD6;}
+li.type-1.SFQs.active{  background: #E5D7ED; border: 2px solid #E5D7ED;}
+li.type-1.SFQs{  border: 2px solid #E5D7ED;}
+.event-desc a {  color: #3A4856;    font-weight: bold;}
+
+/* Buttons Sections */
+.toggle-btns button.old_events,.toggle-btns button.upcoming_events, .toggle-btns button.current_events{ background: #E6EAEE; color: #000033; font-size: 20px;line-height: 48px; padding: 4px 22px; text-transform: uppercase; font-weight: bold;  font-family: 'Open Sans';  border-radius: 0px!important;
+    -webkit-border-radius: 0px!important; height:50px; cursor:pointer; margin-right:6px;}
+.filter-group-items.toggle-btns { border-bottom: 5px solid #000033;  margin-bottom: 42px;}
+button.upcoming_events.active, button.current_events.active,  button.old_events.active { background: #000033;  color: #fff;    border: 0px !important;    border-radius: 0px !important;}
+
+/* events content sec */
+
+li.click-here.reg_closed_li {  background: #5C1B24;}
+li.click-here.reg_coming_li{    background: #0552BD;}
+li.click-here:before {width: 21px; height: 20px;  position: absolute;  content: "";   background: url('/innovativelearning/wp-content/themes/salient-child/images/arrow.svg');  right: 13px;   left: unset;  background-repeat: no-repeat;}
+li.click-here.reg_closed_li:before {width: 21px; height: 20px;  position: absolute;  content: "";   background: url('/innovativelearning/wp-content/themes/salient-child/images/reg-close.svg');  right: 13px;   left: unset;  background-repeat: no-repeat;}
+li.click-here.reg_coming_li:before {width: 21px; height: 20px;  position: absolute;  content: "";   background: url('/innovativelearning/wp-content/themes/salient-child/images/icon_clock.svg');  right: 13px;   left: unset;  background-repeat: no-repeat;}
+
+
+.academic-calendar-card-items-body-item .event-info h3 {font-size: 20px; line-height: 25px;color: #3A4856; font-weight: bold; margin-bottom: 0px !important; border: 0px !important;}
+.academic-calendar-card-items-body-item  .event-info a {  text-decoration: unset !important;}
+.academic-calendar-card-items-body-item .event-info a:hover h3 {color: #065250;}
+.academic-calendar-card-items-body-item p.event-desc { max-width:940px; display: block !important;}
+span.date_info strong {  font-size: 17px;line-height: 12px;  font-weight: bold;    color: #3A4856;}
+span.year-info, span.day-info, span.time-event {    font-size: 16px;    line-height: normal;    color: #3A4856;}
+span.locations {    color: #3A4856;}
+.academic-calendar-card-items-body-item .share-icons {  display: flex;   gap: 15px;}
+.academic-calendar-card-items-body-item .share-icons a span { font-size: 14px; line-height: 14px;  color: #3A4856;}
+.academic-calendar-card-items-body-item p.event-desc {display: block !important;  font-size: 15px;  line-height: normal;   color: #3A4856;  font-weight: normal; padding-bottom: 1em;}
+.selected-academic-calendar-date-types .LMS.\&.EdTech{background: #BFDAD6; color: #000;  font-size: 14px; line-height: 20px; height: 38px; position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .SFQs{  background: #E5D7ED;  color: #000;  font-size: 14px; line-height: 20px; height: 38px;  position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .Events{  background: #A6DCF4;  color: #000; font-size: 14px;  line-height: 20px;  height: 38px; position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .Learning { background: #D1DD61;  color: #000;  font-size: 14px;  line-height: 20px;  height: 38px;  position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .Learning:before { width: 25px; height: 25px; position: absolute; content: "";  background: url('/innovativelearning/wp-content/themes/salient-child/images/Learning-icon.svg'); left: 25px;  right: unset;   background-repeat: no-repeat;}
+.selected-academic-calendar-date-types .Events:before { width: 20px;height: 17px; position: absolute;  content: "";  background: url('/innovativelearning//wp-content/themes/salient-child/images/Event-icon.svg'); left: 15px;   right: unset;    background-repeat: no-repeat;}
+.selected-academic-calendar-date-types .SFQs:before{width: 20px; height: 21px; position: absolute; content: "";background: url('/innovativelearning/wp-content/themes/salient-child/images/Sfq-icon.svg');  left: 25px; right: unset;background-repeat: no-repeat;}
+.selected-academic-calendar-date-types .LMS.\&.EdTech:before{ width: 22px; height: 16px; position: absolute;  content: ""; background: url('/innovativelearning/wp-content/themes/salient-child/images/LMs-icon.svg');  left: 25px;  right: unset;background-repeat: no-repeat;}
+.selected-academic-calendar-date-types .Learning span,.selected-academic-calendar-date-types  .Event span,.selected-academic-calendar-date-types  .SFQs span, .selected-academic-calendar-date-types .LMS.\&.EdTech span{padding-left: 15px;}
+li.click-here {background: #3A4856; color: #fff; text-transform:uppercase; font-size: 14px; line-height: 20px;  height: 38px; position: relative;  padding: 0px 20px !important;}
+li.click-here a{color:#fff; padding-right:20px;}
+
+.selected-academic-calendar-date-types .Certificates { background: #F2B5C0;  color: #000;  font-size: 14px;  line-height: 20px;  height: 38px;  position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .Certificates:before { width: 25px; height: 25px; position: absolute; content: "";  background: url('/innovativelearning/wp-content/themes/salient-child/images/certificate_fill.svg'); left: 15px;  right: unset;   background-repeat: no-repeat;}
+
+.selected-academic-calendar-date-types .HLOs{ background: #F9DAA9;  color: #000;  font-size: 14px;  line-height: 20px;  height: 38px;  position: relative; padding: 0px 20px !important;}
+.selected-academic-calendar-date-types .HLOs:before { width: 21px; height: 21px; position: absolute; content: "";  background: url('/innovativelearning/wp-content/themes/salient-child/images/round_fill.svg'); left: 15px;  right: unset;   background-repeat: no-repeat;}
+
+.academic-calendar-card-items-body-item.\34 1509 li.click-here.reg_closed_li {
+    display: none;
+}
+
+@media(max-width:1536px){
+  ul.academic-date-types-list li {padding: 10px 20px;}  
+}
+
+@media(max-width:1024px){
+ul.academic-date-types-list li {padding: 10px 16px;  }
+.academic-calendar-filters-wrp.second{margin-bottom:40px;}
+.toggle-btns button.old_events, .toggle-btns button.upcoming_events, .toggle-btns button.current_events{font-size:17px;}
+}
+
+@media(max-width:1000px){
+ul.academic-date-types-list li{padding:10px 14px;}
+.academic-calendar-card-items-body-item{flex-direction:column;}
+.academic-calendar-card-items-body-item .date-info{flex: 0 1 93px;  text-align: center; justify-content: left;  align-items: flex-start;}
+.toggle-btns button.old_events, .toggle-btns button.upcoming_events, .toggle-btns button.current_events{font-size:17px;}
+.academic-calendar-filters-wrp.second{margin-bottom:40px; flex-direction:column; gap:10px; align-items: flex-start; }
+.academic-calendar-card-items-body-item .event-info{border-right:0px;}
+.filter-group-items.filter-date-type-wrp{flex-direction:column;     align-items: flex-start;}
+ul.academic-date-types-list li{font-size:11px;}
+}
+
+
+@media(max-width:690px){
+.toggle-btns button.old_events, .toggle-btns button.upcoming_events, .toggle-btns button.current_events{width:100%; margin-right:0px;}
+.academic-calendar-card-items-body-item{width:100%; flex-direction:column;}
+.filter-group-items.filter-date-type-wrp{flex-direction:column;width:71%;justify-content:center; align-items:center;}
+ul.academic-date-types-list{flex-direction:column; width:100%;}
+ul.academic-date-types-list li {font-size:14px; padding: 10px 14px;    text-align: center;    width: 100%;}
+.selected-academic-calendar-date-types{    flex-direction: column;}
+.academic-calendar-filters-wrp.second{align-items:center;}
+}
