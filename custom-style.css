@@ -9,7 +9,7 @@ a{cursor:pointer;}
       border-right: 1px solid #C4C4C4;
       display: flex;
       flex-flow: column;
-      gap: 8px;
+      gap: 10px;
   }
   li.click-here.reg_reminder_li {
     display: none;
